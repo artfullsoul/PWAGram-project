@@ -9,15 +9,16 @@ importScripts("/src/js/utility.js");
 
 
 //name of static cache used below
-var CACHE_STATIC_NAME = "static-v19";
+var CACHE_STATIC_NAME = "static-v33";
 //name of dynamic cache used below
-var CACHE_DYNAMIC_NAME = "dynamic-v4";
+var CACHE_DYNAMIC_NAME = "dynamic-v6";
 var STATIC_FILES = [
   '/',
   '/index.html',
   '/offline.html',
   '/src/js/app.js',
   "/src/js/idb.js",
+  "/src/js/utility.js",
   '/src/js/feed.js',
   '/src/js/promise.js',
   '/src/js/fetch.js',
@@ -115,7 +116,7 @@ self.addEventListener("activate",function(event){
 function isInArray(string, array) {
   var cachePath;
   if (string.indexOf(self.origin) === 0) { // request targets domain where we serve the page from (i.e. NOT a CDN)
-    console.log('matched ', string);
+    // console.log('matched ', string);
     cachePath = string.substring(self.origin.length); // take the part of the URL AFTER the domain (e.g. after localhost:8080)
   } else {
     cachePath = string; // store the full request (for CDNs)
@@ -183,7 +184,9 @@ self.addEventListener('fetch', function (event) {
   });
   
  
-//_________________________________________________________________________SYNC EVENT OF SERVICE WORKER____________________________________________________________________________________________________
+//_________________________________________________________________________SYNC EVENT OF SERVICE WORKER(Step 2)____________________________________________________________________________________________________
+
+//step1-> in feed.js
 //would be fired once the connectivity would be established
 self.addEventListener("sync",function(event){
   console.log("[Service worker] Background Syncing",event);
@@ -192,27 +195,33 @@ self.addEventListener("sync",function(event){
     event.waitUntil(
       readAllData("sync-posts")
         .then(function(data){
-          console.log("Called")
+          
           //this is a for-of loop where each value is in dt & we are looping because there may be more than one post to be stored online
           for(var dt of data){
-            fetch("https://pwagram-47bee.firebaseio.com/posts.json",{
+            //____________________________(STEP 3)OF ENABLING CAMERA SETUP_________________________
+            var postData = new FormData();
+            postData.append("id",dt.id);
+            postData.append("title",dt.title);
+            postData.append("location",dt.location);
+            postData.append("rawLocationLat", dt.rawLocation.lat);
+            postData.append("rawLocationLng", dt.rawLocation.lng);
+            //here we are sending the picture file with custom name and .png extension
+            postData.append("file",dt.picture, dt.id + ".png");
+            console.log("called")
+            fetch("https://us-central1-pwagram-47bee.cloudfunctions.net/storePostData",{
                     method: "POST",
-                    headers: {   
-                        "Content-Type": "application/json",
-                        "Accept": "appliaction/json"
-                    },
-                    body: JSON.stringify({
-                      id: dt.id,
-                      title: dt.title,
-                      location: dt.location,
-                      image:"https://firebasestorage.googleapis.com/v0/b/pwagram-47bee.appspot.com/o/sf-boat.jpg?alt=media&token=89a317ca-01a5-47bc-808d-33710a358ee6"
-                    })
-                    })
+                    body: postData
+                    })//_____________________________TILL HERE______________________________________
               .then(function(res){
                 console.log("sent data",res);
                 //this line checks for 200 case of network
                 if(res.ok){
-                  deleteSingleItem("sync-posts",dt.id)
+                  //__________________________________BACKEND CHANGES______________________________________
+                  res.json()
+                    .then(function(resData) {
+                      deleteSingleItem('sync-posts', resData.id);
+                    });
+                  // deleteSingleItem("sync-posts",dt.id)
                 }
               })
             
@@ -223,6 +232,81 @@ self.addEventListener("sync",function(event){
   }
 })
 
+//____________________________________________________________________(STEP 2)NOTIFICATION ACTION BUTTON LISTNER____________________________________________________________________
+
+//here we are listening if the notification was interacted by user
+  self.addEventListener("notificationclick",function(event){
+    //sees which notificationwas clicked
+    var notification = event.notification;
+    //sees which action was clicked
+    var action = event.action;
+
+    console.log(notification);
+
+    if(action === "confirm"){
+      console.log("Confirm action in notification was chosen");
+      notification.close();
+    }else {
+      console.log(action);
+      // _________________________________________________________________TO OPEN THE BROWSER OR POST ON CLICK ON NOTIFICATION____________________________________________________________
+      event.waitUntil(
+        //clients refers to all the users of the app actually here we are seeing if any tab is opened by the app then click the notifaction to open that tab
+        //otherwise open new tab
+        clients.matchAll()
+        //the above line finds all the open tabs
+          .then(function(clis){
+            //the below line check for each client that weather they have an open tab 
+             var client = clis.find(function(c){
+               return c.visibilityState === "visible";
+             });
+              //this line would open the already opened tab of the particular client 
+              //otherwise if no tabs were opened they would open new tab
+             if(client !== undefined){
+               client.navigate(notification.data.url);
+               client.focus();
+             }else{
+               clients.openWindow(notification.data.url);
+             }
+             notification.close();
+          })
+      )
+      
+    }
+
+  })
+
+//here we are checking if the notification was directly closed
+  self.addEventListener("notificationclose",function(event){
+    console.log("notification was closed",event);
+  })
+
+//____________________________________________________________________________(STEP 5)PUSH NOTIFICATION__________________________________________________________________________________
+  
+//this event would be called by backend through webpush.sendNotification()
+self.addEventListener("push",function(event){
+    //here event would have the values passed by webpush.sendNotification();
+    console.log("push notifiaction received",event);
+    var data={title:"New!", content: "Something new happened!", url: "/"}
+    if(event.data){
+      data = JSON.parse(event.data.text());
+    }
+    //options of the content in notification
+    var options={
+      //remember title is never written here,it is always passed in showNotification() function.
+      body: data.content,
+      icon: "/src/images/icons/app-icon-96x96.png",
+      badge:"/src/images/icons/app-icon-96x96.png",
+      data:{
+        url: data.openUrl
+      }
+      //remember here the payload is set to 4kb so we cannot send a image here
+    }
+
+    event.waitUntil(
+      //this is line is used to get the link to the active service worker on frontend because backend service worker cannot send the notification itself
+      self.registration.showNotification(data.title,options)
+    )
+  })
 
   // self.addEventListener('fetch', function(event) {
   //   event.respondWith(

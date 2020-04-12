@@ -1,0 +1,29 @@
+[debug] [2020-04-11T06:48:07.524Z] ----------------------------------------------------------------------
+[debug] [2020-04-11T06:48:07.526Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Chirag Vaid\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js functions:shell
+[debug] [2020-04-11T06:48:07.526Z] CLI Version:   8.0.2
+[debug] [2020-04-11T06:48:07.526Z] Platform:      win32
+[debug] [2020-04-11T06:48:07.527Z] Node Version:  v12.16.1
+[debug] [2020-04-11T06:48:07.528Z] Time:          Sat Apr 11 2020 12:18:07 GMT+0530 (India Standard Time)
+[debug] [2020-04-11T06:48:07.528Z] ----------------------------------------------------------------------
+[debug] [2020-04-11T06:48:07.528Z] 
+[debug] [2020-04-11T06:48:07.538Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-04-11T06:48:07.538Z] > authorizing via signed-in user
+[debug] [2020-04-11T06:48:07.538Z] [iam] checking project pwagram-47bee for permissions ["firebase.projects.get"]
+[debug] [2020-04-11T06:48:07.542Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pwagram-47bee:testIamPermissions  
+ {"permissions":["firebase.projects.get"]}
+[debug] [2020-04-11T06:48:09.374Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sat, 11 Apr 2020 06:48:09 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=1595","alt-svc":"quic=\":443\"; ma=2592000; v=\"46,43\",h3-Q050=\":443\"; ma=2592000,h3-Q049=\":443\"; ma=2592000,h3-Q048=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000","accept-ranges":"none","transfer-encoding":"chunked"}
+[warn] !  Your requested "node" version "8" doesn't match your global version "12"
+[info] +  functions: functions emulator started at http://localhost:5000
+[debug] [2020-04-11T06:48:11.450Z] [functions] Watching "C:\Users\Chirag Vaid\Desktop\PWA\course-project-starting-setup\functions" for Cloud Functions...
+[debug] [2020-04-11T06:48:11.502Z] DEBUG: [worker-pool] addWorker(~diagnostic~)
+[debug] [2020-04-11T06:48:11.502Z] DEBUG: [worker-pool] Adding worker with key ~diagnostic~, total=1
+[debug] [2020-04-11T06:48:11.503Z] DEBUG: [worker-pool] submitWork(triggerId=)
+[debug] [2020-04-11T06:48:11.504Z] DEBUG: [worker-~diagnostic~-fed81a96-1c8b-47c4-9e0a-13d124566989]: Assigning socketPath: \\?\pipe\C:\Users\Chirag Vaid\Desktop\PWA\course-project-starting-setup\functions\13116
+[debug] [2020-04-11T06:48:11.505Z] DEBUG: [worker-~diagnostic~-fed81a96-1c8b-47c4-9e0a-13d124566989]: BUSY
+[debug] [2020-04-11T06:48:12.245Z] DEBUG: [runtime-status] [13116] Functions runtime initialized. {"cwd":"C:\\Users\\Chirag Vaid\\Desktop\\PWA\\course-project-starting-setup\\functions","node_version":"12.16.1"}
+[debug] [2020-04-11T06:48:12.246Z] DEBUG: [runtime-status] [13116] Disabled runtime features: undefined
+[debug] [2020-04-11T06:48:12.253Z] DEBUG: [runtime-status] [13116] Resolved module firebase-admin {"declared":true,"installed":true,"version":"4.2.1","resolution":"C:\\Users\\Chirag Vaid\\Desktop\\PWA\\course-project-starting-setup\\functions\\node_modules\\firebase-admin\\lib\\index.js"}
+[warn] !  The Cloud Functions emulator requires the module "firebase-admin" to be version >8.9.0 so your version is too old. You can probably fix this by running "npm install firebase-admin@latest" in your functions directory.
+[debug] [2020-04-11T06:48:12.255Z] [functions] Your functions could not be parsed due to an issue with your node_modules (see above)
+[debug] [2020-04-11T06:48:12.271Z] DEBUG: [worker-~diagnostic~-fed81a96-1c8b-47c4-9e0a-13d124566989]: exited
+[debug] [2020-04-11T06:48:12.271Z] DEBUG: [worker-~diagnostic~-fed81a96-1c8b-47c4-9e0a-13d124566989]: FINISHED
